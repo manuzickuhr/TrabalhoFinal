@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import mysql.connector
 
 conexao = mysql.connector.connect(
@@ -60,8 +61,9 @@ class Funcionario(Usuario):
         print("Excluir cliente")
 
 class Cliente(Usuario):
-    def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome):
+    def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, emprestimos):
         super().__init__(id, usuario, senha, cpf, primeiroNome, sobrenome)
+        self.emprestimos = []
 
     def ver_livros():
         print('Ver a lista de todos os livros')
@@ -90,15 +92,21 @@ class Livro():
 
 class Emprestimo():
     def __init__(self, data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario):
-        self.data_emprestimo = data_emprestimo
-        self.data_devolucao = data_devolucao
+        self.data_emprestimo = datetime
+        self.data_devolucao = datetime
         self.id_livro = id_livro
         self.id_cliente = id_cliente
         self.id_funcionario = id_funcionario
         self.status = True
 
-    def realizar_emprestimo():
+    def realizar_emprestimo(livro, cliente):
         print('emprestimo')
 
-    def realizar_devolucao():
+    def realizar_devolucao(livro, cliente):
         print('devolução')
+
+    def calcular_multa():
+        print('multa')
+
+    def verificar_limite(cliente):
+        print('limite')
