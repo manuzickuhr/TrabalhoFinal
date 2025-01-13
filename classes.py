@@ -63,7 +63,7 @@ class Funcionario(Usuario):
 class Cliente(Usuario):
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, emprestimos):
         super().__init__(id, usuario, senha, cpf, primeiroNome, sobrenome)
-        self.emprestimos = []
+        self.emprestimos = emprestimos
 
     def ver_livros():
         print('Ver a lista de todos os livros')
