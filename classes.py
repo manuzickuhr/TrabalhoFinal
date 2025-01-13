@@ -8,6 +8,14 @@ conexao = mysql.connector.connect(
     database = 'trabalhoFinal',
 )
 
+if conexao.is_connected():
+    print("Conexão realizada com sucesso!")
+else:
+    print("Erro ao conectar ao banco de dados.")
+
+# Fechar a conexão
+
+
 class Usuario:
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome):
         self.id = id
@@ -33,7 +41,6 @@ class Usuario:
     def senha(self, novo_senha):
         self.__senha = novo_senha
 
-#No bd fazer 1 tabela usuario com o atributo tipo
 
 class Funcionario(Usuario):
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, email, funcao):
@@ -41,12 +48,71 @@ class Funcionario(Usuario):
         self.email = email
         self.funcao = funcao
 
-    def cadastrar_funcionario():
-        print('cadastro funcionario')
+    def cadastrar_funcionario(conexao, usuario, senha, cpf, primeiro_nome, sobrenome, tipo, email, funcao):
+        try:
+            cursor = conexao.cursor()
+
+            query_usuario = """
+            INSERT INTO Usuario (usuario, senha, cpf, primeiroNome, sobrenome, tipo)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            valores_usuario = (usuario, senha, cpf, primeiro_nome, sobrenome, tipo)
+            cursor.execute(query_usuario, valores_usuario)
+            conexao.commit()
+
+            usuario_id = cursor.lastrowid
+
+            query_funcionario = """
+            INSERT INTO Funcionario (id, email, funcao)
+            VALUES (%s, %s, %s)
+            """
+            valores_funcionario = (usuario_id, email, funcao)
+            cursor.execute(query_funcionario, valores_funcionario)
+            conexao.commit()
+
+            print("Funcionário cadastrado com sucesso!")
+
+        except mysql.connector.Error as e:
+            print(f"Erro ao cadastrar funcionário: {e}")
+            conexao.rollback()  
+
+        finally:
+            cursor.close()
 
     
-    def cadastar_cliente():
-        print('cadastro clientes')
+    def cadastrar_cliente(conexao, usuario, senha, cpf, primeiro_nome, sobrenome, tipo, emprestimos):
+        try:
+            cursor = conexao.cursor()
+            
+            # Inserir na tabela Usuario
+            query_usuario = """
+            INSERT INTO Usuario (usuario, senha, cpf, primeiroNome, sobrenome, tipo)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            valores_usuario = (usuario, senha, cpf, primeiro_nome, sobrenome, tipo)
+            cursor.execute(query_usuario, valores_usuario)
+            conexao.commit()
+            
+            usuario_id = cursor.lastrowid
+
+            # Inserir na tabela Cliente
+            query_cliente = """
+            INSERT INTO Cliente (id, emprestimos)
+            VALUES (%s, %s)
+            """
+            valores_cliente = (usuario_id, emprestimos)
+            cursor.execute(query_cliente, valores_cliente)
+            conexao.commit()
+
+            print("Cliente cadastrado com sucesso!")
+
+        except mysql.connector.Error as e:
+            print(f"Erro ao cadastrar cliente: {e}")
+            conexao.rollback()
+
+        finally: 
+            cursor.close()
+
 
     def editar_funcionario(): #somente com a funcao gerente
         print('editar funcionario')
@@ -110,3 +176,7 @@ class Emprestimo():
 
     def verificar_limite(cliente):
         print('limite')
+
+
+# Fechar a conexão
+conexao.close()
