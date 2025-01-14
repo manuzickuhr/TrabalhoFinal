@@ -330,9 +330,24 @@ class Cliente(Usuario):
         finally:
             cursor.close()
     
-    def ver_emprestimos():
-        print('Ver os emprestimos linkados aquele cliente')
+    def ver_emprestimos(id_cliente):
+        try:
+            cursor = conexao.cursor()
+            query = "SELECT e.* FROM emprestimo e, cliente c WHERE e.id_cliente = %s"
+            cursor.execute(query, (id_cliente,))
+            resultados = cursor.fetchall()
 
+            if not resultados:  # Verifica se a lista de resultados está vazia
+                print("Não há nenhum empréstimo registrado.")
+            else:
+                for row in resultados:
+                    print(row)
+
+        except mysql.connector.Error as e:
+            print(f"Erro ao listar empréstimos: {e}")
+        finally:
+            cursor.close()
+        
 class Livro():
     def __init__(self, id, isbn, nome, autor, edicao, quantidade, emprestado):
         self.id = id
@@ -420,11 +435,51 @@ class Livro():
             print(f"Erro ao deletar livro: {e}")
             conexao.rollback()
 
+    def realizar_emprestimo(self, id_livro, id_cliente, id_funcionario):
+        try:
+            conexao = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="biblioteca"
+            )
+            cursor = conexao.cursor()
+            
+            # Verifica a quantidade disponível do livro
+            query_verificar_quantidade = "SELECT quantidade FROM livros WHERE id = %s"
+            cursor.execute(query_verificar_quantidade, (id_livro,))
+            resultado = cursor.fetchone()
+            
+            if resultado is None:
+                print("Livro não encontrado.")
+                return
+            
+            quantidade_disponivel = resultado[0]
+            if quantidade_disponivel < 1:
+                print("Este livro está indisponível no momento.")
+                return
+            
+            # Insere o empréstimo no banco de dados
+            query_inserir_emprestimo = (
+                "INSERT INTO emprestimos (id_livro, id_cliente, id_funcionario) VALUES (%s, %s, %s)"
+            )
+            cursor.execute(query_inserir_emprestimo, (id_livro, id_cliente, id_funcionario))
+            
+            # Atualiza a quantidade de livros disponíveis
+            query_atualizar_quantidade = "UPDATE livros SET quantidade = quantidade - 1 WHERE id = %s"
+            cursor.execute(query_atualizar_quantidade, (id_livro,))
+            
+            conexao.commit()
+            print("Empréstimo realizado com sucesso!")
+        
+        except mysql.connector.Error as erro:
+            print(f"Erro ao realizar empréstimo: {erro}")
+        
         finally:
-            cursor.close()
-
+                cursor.close()
+                
 class Emprestimo():
-    def __init__(self, data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario):
+    def __init__(self, id_livro, id_cliente, id_funcionario):
         self.data_emprestimo = datetime
         self.data_devolucao = datetime
         self.id_livro = id_livro
@@ -432,10 +487,44 @@ class Emprestimo():
         self.id_funcionario = id_funcionario
         self.status = True
 
-    def realizar_emprestimo(livro, id_cliente, id_funcionario):
-        print('emprestimo')
+    def realizar_emprestimo(id_livro, id_cliente, id_funcionario):
+        try:
+            cursor = conexao.cursor()
+            
+            query_verificar_quantidade = "SELECT quantidade FROM livro WHERE id = %s"
+            cursor.execute(query_verificar_quantidade, (id_livro,))
+            resultado = cursor.fetchone()
+            
+            if resultado is None:
+                print("Livro não encontrado.")
+                return
+            
+            quantidade_disponivel = resultado[0]
+            if quantidade_disponivel < 1:
+                print("Este livro está indisponível no momento.")
+                return
 
-    def realizar_devolucao(livro, id_cliente, id_funcionario):
+            data_emprestimo = datetime.now()
+            data_devolucao = data_emprestimo + timedelta(days=15)
+            
+            query_inserir_emprestimo = (
+                "INSERT INTO emprestimo (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario) VALUES (%s, %s, %s, %s, %s)"
+            )
+            
+            cursor.execute(query_inserir_emprestimo, (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario))
+            
+            # Atualiza a quantidade de livros disponíveis
+            query_atualizar_quantidade = "UPDATE livro SET quantidade = quantidade - 1 WHERE id = %s"
+            cursor.execute(query_atualizar_quantidade, (id_livro,))
+            
+            conexao.commit()
+            print("Empréstimo realizado com sucesso!")
+        
+        except mysql.connector.Error as erro:
+            print(f"Erro ao realizar empréstimo: {erro}")
+        
+
+    def realizar_devolucao(livro, id_cliente, id_funcionario, id):
         print('devolução')
 
     def calcular_multa():
@@ -443,7 +532,6 @@ class Emprestimo():
 
     def verificar_limite(cliente):
         print('limite')
-
 
 
 #Testes de implementação
@@ -457,6 +545,9 @@ cliente1 = Cliente(
     emprestimos=0
 )
 
+
+Emprestimo.realizar_emprestimo(id_livro=1, id_cliente=6, id_funcionario=3)
+
 '''Funcionario.cadastrar_cliente(
     conexao=conexao,
     usuario=cliente1.usuario,
@@ -466,7 +557,7 @@ cliente1 = Cliente(
     sobrenome=cliente1.sobrenome,
     tipo="cliente",
     emprestimos=cliente1.emprestimos
-)'''
+)
 
 funcionario1 = Funcionario(
     id=1,
@@ -482,7 +573,7 @@ funcionario1 = Funcionario(
 Funcionario.editar_funcionario(id=3, funcionario=funcionario1, email="anapereira@hotmail.com")
 Funcionario.editar_cliente(id=6, emprestimos=2)
 
-'''Funcionario.cadastrar_funcionario(
+Funcionario.cadastrar_funcionario(
     conexao=conexao,
     usuario=funcionario1.usuario,
     senha=funcionario1.senha,
@@ -492,7 +583,7 @@ Funcionario.editar_cliente(id=6, emprestimos=2)
     tipo="funcionario",
     email=funcionario1.email,
     funcao=funcionario1.funcao
-)'''
+)
 
 #Funcionario.excluir_cliente(1)
 
@@ -501,8 +592,8 @@ Funcionario.editar_cliente(id=6, emprestimos=2)
 #Livro.editar_livro(1, emprestado=2 )
 
 #Usuario.listar_usuarios()
-#Cliente.ver_livros()
+Cliente.ver_emprestimos(6)
 
-Funcionario.listar_clientes()
+#Funcionario.listar_clientes()'''
 
 conexao.close()
