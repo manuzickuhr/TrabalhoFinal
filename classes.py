@@ -13,9 +13,6 @@ if conexao.is_connected():
 else:
     print("Erro ao conectar ao banco de dados.")
 
-# Fechar a conexão
-
-
 class Usuario:
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome):
         self.id = id
@@ -40,7 +37,6 @@ class Usuario:
     @senha.setter
     def senha(self, novo_senha):
         self.__senha = novo_senha
-
 
 class Funcionario(Usuario):
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, email, funcao):
@@ -79,7 +75,6 @@ class Funcionario(Usuario):
         finally:
             cursor.close()
 
-    
     def cadastrar_cliente(conexao, usuario, senha, cpf, primeiro_nome, sobrenome, tipo, emprestimos):
         try:
             cursor = conexao.cursor()
@@ -113,18 +108,52 @@ class Funcionario(Usuario):
         finally: 
             cursor.close()
 
-
     def editar_funcionario(): #somente com a funcao gerente
         print('editar funcionario')
     
     def editar_cliente():
         print('editar cliente')
 
-    def excluir_funcionario(): #somente gerente
-        print("Excluir funcionario")
+    def excluir_funcionario(valor, funcionario): #somente gerente
+        if funcionario.funcao == "gerente":
+            try:
+                cursor = conexao.cursor()
+                query_funcionario = f"DELETE FROM funcionario WHERE id =%s"
+                cursor.execute(query_funcionario, (valor,))
+                conexao.commit()
 
-    def excluir_cliente():
-        print("Excluir cliente")
+                query_usuario = f"DELETE FROM usuario WHERE id = %s"
+                cursor.execute(query_usuario, (valor,))
+                conexao.commit()
+
+                print(f'Registro da tabela funcionários onde id é igual a {valor} foi deletado. ')
+            
+            except mysql.connector.Error as e:
+                print(f"Erro ao cadastrar funcionário: {e}")
+                conexao.rollback()
+
+            finally:
+                cursor.close()
+
+    def excluir_cliente(valor):
+        try:
+            cursor = conexao.cursor()
+            query_cliente = f"DELETE FROM cliente WHERE id = %s" 
+            cursor.execute(query_cliente, (valor,))
+            conexao.commit()
+
+            query_usuario = f"DELETE FROM usuario WHERE id = %s"
+            cursor.execute(query_usuario, (valor,))
+            conexao.commit()
+
+            print(f'Registro da tabela clientes onde id é igual a {valor} foi deletado. ')
+
+        except mysql.connector.Error as e:
+            print(f"Erro ao cadastrar cliente: {e}")
+            conexao.rollback()
+
+        finally:
+            cursor.close()
 
 class Cliente(Usuario):
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, emprestimos):
@@ -147,14 +176,43 @@ class Livro():
         self.quantidade = quantidade
         self.emprestado = False
 
-    def adicionar_livro():
-        print("Adicionar livro")
+    def adicionar_livro(conexao, isbn, nome, autor, edicao, quantidade):
+        try:
+            cursor = conexao.cursor()
+            query = """INSERT INTO livro (isbn, nome, autor, edicao, quantidade)
+            VALUES(%s, %s, %s, %s, %s)"""
+
+            valores = (isbn, nome, autor, edicao, quantidade)
+            cursor.execute(query, valores)
+            conexao.commit()
+
+            print("Livro adicionado")
+        
+        except mysql.connector.Error as e:
+            print(f"Erro ao cadastrar livro: {e}")
+            conexao.rollback()  
+
+        finally:
+            cursor.close()
 
     def editar_livro():
         print('Editar livro')
 
-    def excluir_livro():
-        print('Excluir livro')
+    def excluir_livro(conexao, valor):
+        try:
+            cursor = conexao.cursor()
+            query = f"DELETE FROM livro where id=%s"
+            cursor.execute(query, (valor,))
+            conexao.commit()
+
+            print(f"Livro com id {valor} foi deletado.")
+
+        except mysql.connector.Error as e:
+            print(f"Erro ao deletar livro: {e}")
+            conexao.rollback()
+
+        finally:
+            cursor.close()
 
 class Emprestimo():
     def __init__(self, data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario):
@@ -165,10 +223,10 @@ class Emprestimo():
         self.id_funcionario = id_funcionario
         self.status = True
 
-    def realizar_emprestimo(livro, cliente):
+    def realizar_emprestimo(livro, id_cliente, id_funcionario):
         print('emprestimo')
 
-    def realizar_devolucao(livro, cliente):
+    def realizar_devolucao(livro, id_cliente, id_funcionario):
         print('devolução')
 
     def calcular_multa():
@@ -178,5 +236,75 @@ class Emprestimo():
         print('limite')
 
 
-# Fechar a conexão
+cliente1 = Cliente(
+    id=1,
+    usuario="joao123",
+    senha="senha123",
+    cpf="12345678901",
+    primeiroNome="João",
+    sobrenome="Silva",
+    emprestimos=0
+)
+
+Funcionario.cadastrar_cliente(
+    conexao=conexao,
+    usuario=cliente1.usuario,
+    senha=cliente1.senha,
+    cpf=cliente1.cpf,
+    primeiro_nome=cliente1.primeiroNome,
+    sobrenome=cliente1.sobrenome,
+    tipo="cliente",
+    emprestimos=cliente1.emprestimos
+)
+
+funcionario1 = Funcionario(
+    id=1,
+    usuario="ana456",
+    senha="senha456",
+    cpf="98765432100",
+    primeiroNome="Ana",
+    sobrenome="Pereira",
+    email="ana.pereira@email.com",
+    funcao="Gerente"
+)
+
+'''Funcionario.cadastrar_funcionario(
+    conexao=conexao,
+    usuario=funcionario1.usuario,
+    senha=funcionario1.senha,
+    cpf=funcionario1.cpf,
+    primeiro_nome=funcionario1.primeiroNome,
+    sobrenome=funcionario1.sobrenome,
+    tipo="funcionario",
+    email=funcionario1.email,
+    funcao=funcionario1.funcao
+)'''
+
+funcionario1 = Funcionario(
+    id=1,
+    usuario="ana456",
+    senha="senha456",
+    cpf="98765432100",
+    primeiroNome="Ana",
+    sobrenome="Pereira",
+    email="ana.pereira@email.com",
+    funcao="Gerente"
+)
+
+'''Funcionario.cadastrar_funcionario(
+    conexao=conexao,
+    usuario=funcionario1.usuario,
+    senha=funcionario1.senha,
+    cpf=funcionario1.cpf,
+    primeiro_nome=funcionario1.primeiroNome,
+    sobrenome=funcionario1.sobrenome,
+    tipo="funcionario",
+    email=funcionario1.email,
+    funcao=funcionario1.funcao
+)'''
+
+#Funcionario.excluir_cliente(1)
+
+Livro.adicionar_livro(conexao, "123", "Exemplo de Livro", "Autor X", "1ª Edição", 10)
+
 conexao.close()
