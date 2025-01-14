@@ -47,7 +47,13 @@ CREATE TABLE Emprestimo (
     FOREIGN KEY (id_funcionario) REFERENCES Funcionario(id) ON DELETE CASCADE
 );
 
+alter table livro
+modify emprestado int ;
 
+select * from usuario ;
+select * from cliente; 
+select * from funcionario;
+select * from livro ;
 
 
 
