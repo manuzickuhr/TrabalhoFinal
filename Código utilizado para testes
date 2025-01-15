@@ -1,0 +1,245 @@
+
+Funcionario.cadastrar_funcionario(
+    usuario="gerente01",
+    senha="senha123",
+    cpf="44717328035",
+    primeiro_nome="Carlos",
+    sobrenome="Silva",
+    email="carlos.silva@empresa.com",
+    funcao="Gerente"
+)
+
+Funcionario.cadastrar_funcionario(
+    usuario="gerente02",
+    senha="senha456",
+    cpf="94697010035",
+    primeiro_nome="Mariana",
+    sobrenome="Almeida",
+    email="mariana.almeida@empresa.com",
+    funcao="Gerente"
+)
+
+# Atendentes
+Funcionario.cadastrar_funcionario(
+    usuario="atendente01",
+    senha="senha789",
+    cpf="69816621088",
+    primeiro_nome="Lucas",
+    sobrenome="Pereira",
+    email="lucas.pereira@empresa.com",
+    funcao="Atendente"
+)
+
+Funcionario.cadastrar_funcionario(
+    usuario="atendente02",
+    senha="senha321",
+    cpf="85651790012",
+    primeiro_nome="Ana",
+    sobrenome="Costa",
+    email="ana.costa@empresa.com",
+    funcao="Atendente"
+)
+
+Funcionario.cadastrar_funcionario(
+    usuario="atendente03",
+    senha="senha654",
+    cpf="26028328049",
+    primeiro_nome="João",
+    sobrenome="Mendes",
+    email="joao.mendes@empresa.com",
+    funcao="Atendente"
+)
+
+# Outro
+Funcionario.cadastrar_funcionario(
+    usuario="outro01",
+    senha="senha987",
+    cpf="80042250048",
+    primeiro_nome="Rafael",
+    sobrenome="Carvalho",
+    email="rafael.carvalho@empresa.com",
+    funcao="Outro"
+)
+
+Funcionario.cadastrar_funcionario(
+    usuario="outro02",
+    senha="senha988",
+    cpf="49755716092",
+    primeiro_nome="Amanda",
+    sobrenome="Rocha",
+    email="amanda.rocha@empresa.com",
+    funcao="Outro"
+)
+
+Funcionario.listar_funcionarios()
+
+Funcionario.editar_funcionario(
+    id=5,  # Substitua pelo ID real do funcionário na tabela Funcionario
+    funcao="Outro"
+) 
+
+Funcionario.editar_funcionario(
+    id=7,  # Substitua pelo ID real do funcionário na tabela Funcionario
+    email="rocha.amanda@empresa.com",
+    funcao="Atendente"
+)
+
+Funcionario.excluir_funcionario(
+    id_gerente = 2,
+    id_funcionario = 5
+)
+
+# Cadastrando 5 clientes
+Funcionario.cadastrar_cliente(
+    usuario="cliente01",
+    senha="senha001",
+    cpf="12345678901",
+    primeiro_nome="Maria",
+    sobrenome="Silva",
+    emprestimos=0
+)
+
+Funcionario.cadastrar_cliente(
+    usuario="cliente02",
+    senha="senha002",
+    cpf="23456789012",
+    primeiro_nome="João",
+    sobrenome="Pereira",
+    emprestimos=0
+)
+
+Funcionario.cadastrar_cliente(
+    usuario="cliente03",
+    senha="senha003",
+    cpf="34567890123",
+    primeiro_nome="Ana",
+    sobrenome="Costa",
+    emprestimos=0
+)
+
+Funcionario.cadastrar_cliente(
+    usuario="cliente04",
+    senha="senha004",
+    cpf="45678901234",
+    primeiro_nome="Carlos",
+    sobrenome="Mendes",
+    emprestimos=0
+)
+
+Funcionario.cadastrar_cliente(
+    usuario="cliente05",
+    senha="senha005",
+    cpf="56789012345",
+    primeiro_nome="Luciana",
+    sobrenome="Almeida",
+    emprestimos=0
+)
+
+
+# Editando o cliente com ID 7 (alterando o nome e os empréstimos)
+Funcionario.editar_cliente(
+    id=15,  # Substitua pelo ID real do cliente que deseja editar
+    emprestimos=2
+)
+
+
+Funcionario.editar_funcionario(
+    id=7,  # Substitua pelo ID real do funcionário na tabela Funcionario
+    primeiroNome = "Amandaa",
+    email="rocha.amanda@empresa.com",
+    funcao="Atendente"
+)
+
+Funcionario.listar_clientes()
+Usuario.listar_usuarios()
+
+Funcionario.excluir_cliente(17)
+
+
+# Usando o método 'adicionar_livro' para adicionar livros ao banco de dados
+
+Livro.adicionar_livro(isbn="1234567890123", nome="O Senhor dos Anéis: A Sociedade do Anel", autor="J.R.R. Tolkien", edicao="1ª", quantidade=10)
+Livro.adicionar_livro(isbn="2234567890123", nome="Harry Potter e a Pedra Filosofal", autor="J.K. Rowling", edicao="1ª", quantidade=8)
+Livro.adicionar_livro(isbn="3234567890123", nome="O Hobbit", autor="J.R.R. Tolkien", edicao="2ª", quantidade=15)
+Livro.adicionar_livro(isbn="4234567890123", nome="1984", autor="George Orwell", edicao="1ª", quantidade=5)
+Livro.adicionar_livro(isbn="5234567890123", nome="Dom Quixote", autor="Miguel de Cervantes", edicao="4ª", quantidade=7)
+Livro.adicionar_livro(isbn="6234567890123", nome="A Guerra dos Tronos", autor="George R.R. Martin", edicao="1ª", quantidade=12)
+Livro.adicionar_livro(isbn="7234567890123", nome="O Código Da Vinci", autor="Dan Brown", edicao="2ª", quantidade=9)
+Livro.adicionar_livro(isbn="8234567890123", nome="O Alquimista", autor="Paulo Coelho", edicao="1ª", quantidade=4)
+Livro.adicionar_livro(isbn="9234567890123", nome="A Menina que Roubava Livros", autor="Markus Zusak", edicao="3ª", quantidade=11)
+Livro.adicionar_livro(isbn="1023456789012", nome="Cem Anos de Solidão", autor="Gabriel García Márquez", edicao="1ª", quantidade=3)
+Livro.adicionar_livro(isbn="1123456789012", nome="O Morro dos Ventos Uivantes", autor="Emily Brontë", edicao="1ª", quantidade=6)
+ 
+Livro.editar_livro(
+    id=3,  # ID do livro que você deseja editar
+    nome="O Hobbit - Edição Especial",  # Novo nome
+    quantidade=20  # Nova quantidade de cópias
+)
+
+Livro.excluir_livro(
+    id=10
+)
+
+Cliente.ver_livros()
+
+# Realizando 5 empréstimos
+emprestimo1 = Emprestimo(id_livro=8, id_cliente=15, id_funcionario=2)  # Exemplo: Cliente 7, Livro 1, Gerente 2
+emprestimo1.realizar_emprestimo()
+
+emprestimo2 = Emprestimo(id_livro=8, id_cliente=15, id_funcionario=3)  # Exemplo: Cliente 8, Livro 2, Atendente 3
+emprestimo2.realizar_emprestimo()
+
+emprestimo3 = Emprestimo(id_livro=8, id_cliente=16, id_funcionario=2)  # Exemplo: Cliente 9, Livro 3, Gerente 2
+emprestimo3.realizar_emprestimo()
+
+emprestimo4 = Emprestimo(id_livro=8, id_cliente=18, id_funcionario=3)  # Exemplo: Cliente 10, Livro 4, Atendente 3
+emprestimo4.realizar_emprestimo()
+
+emprestimo5 = Emprestimo(id_livro=8, id_cliente=19, id_funcionario=1)  # Exemplo: Cliente 11, Livro 5, Gerente 1
+emprestimo5.realizar_emprestimo()
+
+Emprestimo.realizar_devolucao(2)
+
+
+Cliente.ver_emprestimos(
+    id_cliente=15
+)
+
+# Calculando a data de 20 dias atrás
+data_20_dias_atras = datetime.now() - timedelta(days=20)
+data_20_dias_atras_str = data_20_dias_atras.strftime('%Y-%m-%d')  # Formato: 'YYYY-MM-DD'
+
+# Inserindo os registros de empréstimo no banco de dados
+try:
+    cursor = conexao.cursor()
+
+    # Inserir o primeiro empréstimo
+    query_emprestimo1 = """
+    INSERT INTO Emprestimo (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    data_devolucao1 = data_20_dias_atras + timedelta(days=15)  # Data de devolução 15 dias após a data do empréstimo
+    cursor.execute(query_emprestimo1, (data_20_dias_atras_str, data_devolucao1.strftime('%Y-%m-%d'), 1, 15, 2))  # Exemplo de livro_id=1, cliente_id=7, funcionario_id=2
+
+    # Inserir o segundo empréstimo
+    query_emprestimo2 = """
+    INSERT INTO Emprestimo (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    data_devolucao2 = data_20_dias_atras + timedelta(days=15)  # Data de devolução 15 dias após a data do empréstimo
+    cursor.execute(query_emprestimo2, (data_20_dias_atras_str, data_devolucao2.strftime('%Y-%m-%d'), 2, 16, 3))  # Exemplo de livro_id=2, cliente_id=8, funcionario_id=3
+
+    # Commit para persistir os dados no banco
+    conexao.commit()
+    print("Empréstimos inseridos com sucesso!")
+
+except mysql.connector.Error as e:
+    print(f"Erro ao inserir empréstimos: {e}")
+    conexao.rollback()
+
+finally:
+    cursor.close()
+    Emprestimo.realizar_devolucao(9)
+    
+Cliente.ver_multas(16)
+Cliente.pagar_multa(1)
