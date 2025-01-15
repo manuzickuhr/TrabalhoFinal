@@ -31,7 +31,7 @@ def sistema_login():
         senha = input("Senha: ")
         try:
             cursor = conexao.cursor()
-            query = "SELECT senha, tipo, id, cpf FROM USUARIO WHERE usuario = %s"
+            query = "SELECT senha, tipo, id FROM USUARIO WHERE usuario = %s"
             cursor.execute(query, (usuario,))
             informacoes = cursor.fetchone()  # Use fetchone() para obter apenas um registro.
 
