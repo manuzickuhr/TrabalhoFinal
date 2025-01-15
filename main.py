@@ -31,11 +31,12 @@ def sistema_login():
         senha = input("Senha: ")
         try:
             cursor = conexao.cursor()
-            query = "SELECT senha, tipo, id FROM USUARIO WHERE usuario = %s"
+            query = "SELECT senha, tipo, id, cpf FROM USUARIO WHERE usuario = %s"
             cursor.execute(query, (usuario,))
             informacoes = cursor.fetchone()  # Use fetchone() para obter apenas um registro.
 
             if informacoes:
+                global id_usuario
                 senha_correta, tipo_usuario, id_usuario = informacoes
                 if senha == senha_correta:
                     print(f"Bem-vindo, {usuario}!")
@@ -127,15 +128,15 @@ def menu_clientes():
                 vazio(senha)
                 cpf = input("Informe o novo cpf do cliente: ")
                 vazio(cpf)
-                if cpf != None:
-                    while True:
-                        try:
-                            cpf = input('Digite o CPF: ')
-                            verificar_cpf(cpf)  # Verifica se o CPF é válido
-                            print("CPF válido!")  # Se o CPF for válido, sai do laço
-                            break  # Encerra o laço e segue para o restante do cadastro
-                        except ValueError as e:
-                            print(f"Erro: {e}. Tente novamente.")
+                # if cpf != None:
+                #     while True:
+                #         try:
+                #             cpf = input('Digite o CPF: ')
+                #             verificar_cpf(cpf)  # Verifica se o CPF é válido
+                #             print("CPF válido!")  # Se o CPF for válido, sai do laço
+                #             break  # Encerra o laço e segue para o restante do cadastro
+                #         except ValueError as e:
+                #             print(f"Erro: {e}. Tente novamente.")
                 primeiro_nome = input("Informe o novo primeiro nome do cliente: ")
                 vazio(primeiro_nome)
                 sobrenome = input("Informe o novo sobrenome do cliente: ")
@@ -168,69 +169,129 @@ def menu_clientes():
         else:
             print("Opção inválida. Tente novamente.")
 
-# def menu_livros():
-#     while True:
-#         print("\nMenu Livros:")
-#         print("1 - Voltar")
-#         print("2 - Cadastrar Livro")
-#         print("3 - Editar Livro")
-#         print("4 - Deletar Livro")
-#         print("5 - Listar Livros")
-#         escolha_livros = int(input("Digite o número da opção desejada: "))
+def menu_livros():
+    while True:
+        print("\nMenu Livros:")
+        print("1 - Voltar")
+        print("2 - Cadastrar Livro")
+        print("3 - Editar Livro")
+        print("4 - Deletar Livro")
+        print("5 - Listar Livros")
+        escolha_livros = int(input("Digite o número da opção desejada: "))
 
-#         if escolha_livros == 1:
-#             break
-#         elif escolha_livros == 2:
-#             cadastrar_livro()
-#         elif escolha_livros == 3:
-#             editar_livro()
-#         elif escolha_livros == 4:
-#             deletar_livro()
-#         elif escolha_livros == 5:
-#             listar_livros()
-#         else:
-#             print("Opção inválida. Tente novamente.")
+        if escolha_livros == 1:
+            menu_funcionario()
+        elif escolha_livros == 2:
+            print("Preencha as informações abaixo para adicionar o livro: ")
+            isbn = input("Informe o ISBN do livro: ")
+            nome = input("Informe o nome do livro: ")
+            autor = input("Informe o autor do livro: ")
+            edicao = input("Informe a edicao do livro: ")
+            quantidade = input("Informe a quantidade de livros: ")
+            Livro.adicionar_livro(isbn, nome, autor, edicao, quantidade)
+        elif escolha_livros == 3:
+            cursor = conexao.cursor()
 
-# def menu_emprestimos():
-#     while True:
-#         print("\nMenu Empréstimos:")
-#         print("1 - Voltar")
-#         print("2 - Realizar Empréstimo")
-#         print("3 - Devolver Livro")
-#         print("4 - Listar Empréstimos")
-#         escolha_emprestimos = int(input("Digite o número da opção desejada: "))
+            id = input("Informe o ID cadastrado do livro que deseja editar: ")
+            try: 
+                query = "SELECT id FROM LIVRO WHERE id = %s"
+                cursor.execute(query, (id,))
+                id = cursor.fetchone()
 
-#         if escolha_emprestimos == 1:
-#             break
-#         elif escolha_emprestimos == 2:
-#             realizar_emprestimo()
-#         elif escolha_emprestimos == 3:
-#             devolver_livro()
-#         elif escolha_emprestimos == 4:
-#             listar_emprestimos()
-#         else:
-#             print("Opção inválida. Tente novamente.")
+                if id:
+                    print("Livro encontrado! ")
+                    print("Preencha as informações abaixo que deseja alterar (caso não seja alterada aperte a tecla ENTER, pulando aquele dado): ")
+                    isbn = input("Informe o novo ISBN do livro: ")
+                    vazio(isbn)
+                    nome = input("Infomre o novo nome que será utilizada: ")
+                    vazio(nome)
+                    autor = input("Informe o novo autor do livro: ")
+                    vazio(autor)
+                    edicao = input("Informe o nova edicao do livro: ")
+                    vazio(edicao)
+                    quantidade = input("Informe a nova quantidade de livros: ")
+                    vazio(quantidade)
+                    Livro.editar_livro(id,isbn, nome, autor, edicao, quantidade)
+            except mysql.connector.Error as e:
+                print(f"Erro ao fazer login: {e}")
+                conexao.rollback()
+            finally:
+                cursor.close()
+        elif escolha_livros == 4:
+            input("Informe o ID do livro que deseja deletar: ")
+            Livro.excluir_livro()
+        elif escolha_livros == 5:
+            Cliente.ver_livros()
+        else:
+            print("Opção inválida. Tente novamente.")
 
-# def menu_cliente():
-#     while True:
-#         print("\nMenu Empréstimos:")
-#         print("1 - Sair")
-#         print("2 - Ver livros")
-#         print("3 - Ver emprestimos")
-#         print("4 - Calcular multas")
-#         print("5 - Pagar multa")
-#         escolha_emprestimos = int(input("Digite o número da opção desejada: "))
+def menu_emprestimos():
+    while True:
+        print("\nMenu Empréstimos:")
+        print("1 - Voltar")
+        print("2 - Realizar Empréstimo")
+        print("3 - Devolver Livro")
+        escolha_emprestimos = int(input("Digite o número da opção desejada: "))
 
-#         if escolha_emprestimos == 1:
-#             break
-#         elif escolha_emprestimos == 2:
-#             realizar_emprestimo()
-#         elif escolha_emprestimos == 3:
-#             devolver_livro()
-#         elif escolha_emprestimos == 4:
-#             listar_emprestimos()
-#         else:
-#             print("Opção inválida. Tente novamente.")
+        if escolha_emprestimos == 1:
+            print("Voltando ao menu anterior: ")
+            menu_funcionario()
+        elif escolha_emprestimos == 2:
+            livro = input("Informe o ID do livro que será emprestado: ")
+            cliente = input("Informe o ID do cliente que irá pegar o livro: ")
+            funcionario = input("Informe o ID do funcionário que auxiliou no empréstimo: ")
+            emprestimo1 = Emprestimo(livro,cliente,funcionario)
+            emprestimo1.realizar_emprestimo()
+        elif escolha_emprestimos == 3:
+            try:
+                cursor = conexao.cursor()
+                cpf = input("Digite o cpf do cliente que está devolvendo o livro: ")
+                id_livro = input("Digite o ID do livro que será devolvido: ")
+
+                query_id_cliente = "SELECT id FROM cliente WHERE cpf = %s"
+                cursor.execute(query_id_cliente, (cpf,))
+                id_cliente = cursor.fetchone()
+
+                query_id_emprestimo = "SELECT id FROM cliente WHERE id_livro = %s and id_cliente = %s"
+                cursor.execute(query_id_emprestimo, (id_livro,id_cliente,))
+                id_emprestimo = cursor.fetchone()
+
+                conexao.commit()
+
+                Emprestimo.realizar_devolucao(id_emprestimo)
+            except mysql.connector.Error as erro:
+                print(f"Erro ao realizar devolução: {erro}")
+
+            finally:
+                cursor.close()
+        else:
+            print("Opção inválida. Tente novamente.")
+
+def menu_cliente():
+    while True:
+        print("\nMenu Cliente:")
+        print("1 - Sair")
+        print("2 - Ver livros")
+        print("3 - Ver emprestimos")
+        print("4 - Calcular multas")
+        print("5 - Pagar multa")
+        escolha_cliente = int(input("Digite o número da opção desejada: "))
+
+        if escolha_cliente == 1:
+            print("Saindo do sistema. ")
+            break
+        elif escolha_cliente == 2:
+            Cliente.ver_livros()
+        elif escolha_cliente == 3:
+            Cliente.ver_emprestimos(id_usuario)
+        elif escolha_cliente == 4:
+            Emprestimo.calcular_multa(id_usuario)
+            Cliente.ver_multas(id_usuario)
+        elif escolha_cliente == 4:
+            id_multa = input("Informe o ID da multa que deseja pagar: ")
+            Cliente.pagar_multa(id_multa)
+        else:
+            print("Opção inválida. Tente novamente.")
 
 
 def vazio(dado):
