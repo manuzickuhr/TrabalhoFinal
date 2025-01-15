@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import mysql.connector
 from classes import *
 
+
 conexao = mysql.connector.connect(
     host = 'localhost' ,
     user = 'root' ,
@@ -14,10 +15,10 @@ conexao = mysql.connector.connect(
 # else:
 #     print("Erro ao conectar ao banco de dados.")
 
+def vazio(dado):
+    if dado == "":
+        dado = None
 
-usuarios = []
-livros = []
-emprestimos = []
 
 
 
@@ -69,6 +70,7 @@ def menu_funcionario():
         print("2 - Clientes")
         print("3 - Livros")
         print("4 - Empréstimos")
+        print("5 - Funcionários")
         
         escolha_principal = int(input("Digite o número da opção desejada: "))
 
@@ -81,6 +83,8 @@ def menu_funcionario():
             menu_livros()
         elif escolha_principal == 4:
             menu_emprestimos()
+        elif escolha_principal == 5:
+            menu_funcionarios
         else:
             print("Opção inválida. Tente novamente.")
 
@@ -112,36 +116,37 @@ def menu_clientes():
 
             primeiro_nome = input("Informe o primeiro nome do cliente: ")
             sobrenome = input("Informe o sobrenome do cliente: ")
-            Funcionario.cadastrar_cliente(usuario, senha, cpf, primeiro_nome, sobrenome,0)
+            Funcionario.cadastrar_cliente(usuario, senha, cpf, primeiro_nome, sobrenome)
         elif escolha_usuarios == 3:
             cursor = conexao.cursor()
             cpf = input("Informe o cpf do cliente que deseja alterar suas informações: ")
             try: 
-                query = "SELECT u.id FROM USUARIO u WHERE cpf = %s"
+                query = "SELECT id FROM USUARIO WHERE cpf = %s"
                 cursor.execute(query, (cpf,))
                 id = cursor.fetchone()
-                print("Cliente encontrado! ")
-                print("Preencha as informações abaixo que deseja alterar (caso não seja alterada aperte a tecla ENTER, pulando aquele dado): ")
-                usuario = input("Informe o novo nome de usuário para ser utilizado: ")
-                vazio(usuario)
-                senha = input("Infomre a nova senha que será utilizada: ")
-                vazio(senha)
-                cpf = input("Informe o novo cpf do cliente: ")
-                vazio(cpf)
-                # if cpf != None:
-                #     while True:
-                #         try:
-                #             cpf = input('Digite o CPF: ')
-                #             verificar_cpf(cpf)  # Verifica se o CPF é válido
-                #             print("CPF válido!")  # Se o CPF for válido, sai do laço
-                #             break  # Encerra o laço e segue para o restante do cadastro
-                #         except ValueError as e:
-                #             print(f"Erro: {e}. Tente novamente.")
-                primeiro_nome = input("Informe o novo primeiro nome do cliente: ")
-                vazio(primeiro_nome)
-                sobrenome = input("Informe o novo sobrenome do cliente: ")
-                vazio(sobrenome)
-                Funcionario.editar_cliente(id, usuario, senha, cpf, primeiro_nome, sobrenome)
+                if id:
+                    print("Cliente encontrado! ")
+                    print("Preencha as informações abaixo que deseja alterar (caso não seja alterada aperte a tecla ENTER, pulando aquele dado): ")
+                    usuario = input("Informe o novo nome de usuário para ser utilizado: ")
+                    vazio(usuario)
+                    senha = input("Infomre a nova senha que será utilizada: ")
+                    vazio(senha)
+                    cpf = input("Informe o novo cpf do cliente: ")
+                    vazio(cpf)
+                    # if cpf != None:
+                    #     while True:
+                    #         try:
+                    #             cpf = input('Digite o CPF: ')
+                    #             verificar_cpf(cpf)  # Verifica se o CPF é válido
+                    #             print("CPF válido!")  # Se o CPF for válido, sai do laço
+                    #             break  # Encerra o laço e segue para o restante do cadastro
+                    #         except ValueError as e:
+                    #             print(f"Erro: {e}. Tente novamente.")
+                    primeiro_nome = input("Informe o novo primeiro nome do cliente: ")
+                    vazio(primeiro_nome)
+                    sobrenome = input("Informe o novo sobrenome do cliente: ")
+                    vazio(sobrenome)
+                    Funcionario.editar_cliente(id, usuario, senha, cpf, primeiro_nome, sobrenome)
             except mysql.connector.Error as e:
                 print(f"Erro ao fazer login: {e}")
                 conexao.rollback()
@@ -267,6 +272,91 @@ def menu_emprestimos():
         else:
             print("Opção inválida. Tente novamente.")
 
+def menu_funcionarios():
+    while True:
+        print("\nMenu Funcionários:")
+        print("1 - Voltar")
+        print("2 - Cadastrar Funcionário")
+        print("3 - Editar Funcionário")
+        print("4 - Deletar Funcionário")
+        print("5 - Listar Funcionários")
+        escolha_funcionarios = int(input("Digite o número da opção desejada: "))
+
+        if escolha_funcionarios == 1:
+            print("Voltando ao menu anterior.")
+            menu_funcionario()  # Chama o menu de funcionário principal.
+        elif escolha_funcionarios == 2:
+            print("Preencha as informações abaixo para cadastrar o funcionário: ")
+            usuario = input("Informe o nome de usuário para o funcionário: ")
+            senha = input("Informe a senha para o funcionário: ")
+            cpf = input("Digite o CPF do funcionário: ")
+            primeiro_nome = input("Informe o primeiro nome do funcionário: ")
+            sobrenome = input("Informe o sobrenome do funcionário: ")
+            email = input("Informe o email do funcionário: ")
+            funcao = input("Informe a função do funcionário (primeira letra maiúscula): ")
+            Funcionario.cadastrar_funcionario(usuario, senha, cpf, primeiro_nome, sobrenome, email, funcao)
+        elif escolha_funcionarios == 3:
+            cursor = conexao.cursor()
+            cpf = input("Informe o CPF do funcionário que deseja alterar suas informações: ")
+            try:
+                query = "SELECT u.id FROM USUARIO u WHERE cpf = %s AND tipo = 'funcionario'"
+                cursor.execute(query, (cpf,))
+                id_funcionario = cursor.fetchone()
+                
+                if id_funcionario:
+                    print("Funcionário encontrado!")
+                    print("Preencha as informações abaixo para alterar (caso não queira alterar, pressione ENTER): ")
+                    usuario = input("Informe o novo nome de usuário: ")
+                    vazio(usuario)
+                    senha = input("Informe a nova senha: ")
+                    vazio(senha)
+                    cpf = input("Informe o novo CPF: ")
+                    vazio(cpf)
+                    primeiro_nome = input("Informe o novo primeiro nome: ")
+                    vazio(primeiro_nome)
+                    sobrenome = input("Informe o novo sobrenome: ")
+                    vazio(sobrenome)
+                    email = input("Informe o novo email do funcionário: ")
+                    vazio(email)
+                    funcao = input("Informe a nova função do funcionário (primeira letra maiúscula): ")
+                    vazio(funcao)
+                    
+                    Funcionario.editar_funcionario(id_funcionario[0], usuario, senha, cpf, primeiro_nome, sobrenome,email,funcao)
+                else:
+                    print("Funcionário não encontrado com esse CPF.")
+            except mysql.connector.Error as e:
+                print(f"Erro ao editar o funcionário: {e}")
+                conexao.rollback()
+            finally:
+                cursor.close()
+        elif escolha_funcionarios == 4:
+            cursor = conexao.cursor()
+            cpf = input("Informe o CPF do funcionário que deseja excluir: ")
+            try:
+                query = "SELECT u.id FROM USUARIO u WHERE cpf = %s AND tipo = 'funcionario'"
+                cursor.execute(query, (cpf,))
+                id_funcionario = cursor.fetchone()
+
+                if id_funcionario:
+                    confirmar = input("Tem certeza que deseja excluir este funcionário? (sim/nao): ")
+                    if confirmar.lower() == "sim":
+                        Funcionario.excluir_funcionario(id_funcionario[0])
+                        print("Funcionário excluído com sucesso.")
+                    else:
+                        print("Exclusão cancelada.")
+                else:
+                    print("Funcionário não encontrado com esse CPF.")
+            except mysql.connector.Error as e:
+                print(f"Erro ao excluir o funcionário: {e}")
+                conexao.rollback()
+            finally:
+                cursor.close()
+        elif escolha_funcionarios == 5:
+            Funcionario.listar_clientes()  # Assume que "listar_clientes" lista funcionários também.
+        else:
+            print("Opção inválida. Tente novamente.")
+
+
 def menu_cliente():
     while True:
         print("\nMenu Cliente:")
@@ -294,9 +384,6 @@ def menu_cliente():
             print("Opção inválida. Tente novamente.")
 
 
-def vazio(dado):
-    if dado == "":
-        dado = None
 
 def verificar_cpf(cpf):
 
