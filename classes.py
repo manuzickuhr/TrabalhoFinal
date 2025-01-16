@@ -1,17 +1,20 @@
 from datetime import datetime, timedelta
 import mysql.connector
 
-conexao = mysql.connector.connect(
-    host = 'localhost' ,
-    user = 'root' ,
-    password = 'root',
-    database = 'trabalhoFinal',
-)
+def conectar_banco():
+    try:
+        conexao = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root",
+            database="trabalhoFinal"
+        )
+        print("Conexao funcionando")
+        return conexao
+    except mysql.connector.Error as erro:
+        print(f"Erro ao conectar ao banco de dados: {erro}")
+        return None
 
-if conexao.is_connected():
-    print("Conexão realizada com sucesso!")
-else:
-    print("Erro ao conectar ao banco de dados.")
 
 class Usuario:
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome):
@@ -23,6 +26,7 @@ class Usuario:
         self.sobrenome = sobrenome
 
     def listar_usuarios():
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
             query = "SELECT * FROM Usuario"
@@ -34,6 +38,7 @@ class Usuario:
             print(f"Erro ao listar usuários: {e}")
         finally:
             cursor.close()
+            conexao.close()
 
 class Funcionario(Usuario):
     def __init__(self, id, usuario, senha, cpf, primeiroNome, sobrenome, email, funcao):
@@ -42,6 +47,7 @@ class Funcionario(Usuario):
         self.funcao = funcao
 
     def cadastrar_funcionario(usuario, senha, cpf, primeiro_nome, sobrenome, email, funcao):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
             
@@ -62,8 +68,10 @@ class Funcionario(Usuario):
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
     def excluir_funcionario(id_gerente, id_funcionario):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -100,8 +108,10 @@ class Funcionario(Usuario):
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
     def editar_funcionario(id, usuario=None, senha=None, cpf=None, primeiroNome=None, sobrenome=None, email=None, funcao=None):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -142,16 +152,18 @@ class Funcionario(Usuario):
             if not cursor.fetchone():
                 print("Funcionário não encontrado.")
                 return
+            if campos_funcionario:
+                query_funcionario = f"UPDATE Funcionario SET {', '.join(campos_funcionario)} WHERE id = %s"
+                dados_funcionario.append(id)
+                cursor.execute(query_funcionario, dados_funcionario)
+                conexao.commit()
 
-            query_funcionario = f"UPDATE Funcionario SET {', '.join(campos_funcionario)} WHERE id = %s"
-            dados_funcionario.append(id)
-            cursor.execute(query_funcionario, dados_funcionario)
-            conexao.commit()
 
-            query_usuario = f"UPDATE Usuario SET {', '.join(campos_atualizar)} WHERE id = %s"
-            dados.append(id)
-            cursor.execute(query_usuario, dados)
-            conexao.commit()
+            if campos_atualizar:
+                query_usuario = f"UPDATE Usuario SET {', '.join(campos_atualizar)} WHERE id = %s"
+                dados.append(id)
+                cursor.execute(query_usuario, dados)
+                conexao.commit()
 
             print(f"Funcionário com ID {id} atualizado com sucesso!")
         except mysql.connector.Error as e:
@@ -159,8 +171,10 @@ class Funcionario(Usuario):
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
     def listar_funcionarios():
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
             query = "SELECT u.id, u.usuario, u.cpf, u.primeiroNome, u.sobrenome, u.tipo, f.email, f.funcao FROM Usuario u JOIN Funcionario f ON u.id = f.id"
@@ -175,8 +189,10 @@ class Funcionario(Usuario):
             print(f"Erro ao listar funcionários: {e}")
         finally:
             cursor.close()
+            conexao.close()
 
     def cadastrar_cliente(usuario, senha, cpf, primeiro_nome, sobrenome, emprestimos):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -199,8 +215,10 @@ class Funcionario(Usuario):
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
     def excluir_cliente(id):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -223,8 +241,10 @@ class Funcionario(Usuario):
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close
     
     def editar_cliente(id, usuario=None, senha=None, cpf=None, primeiroNome=None, sobrenome=None, emprestimos=None):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -275,9 +295,11 @@ class Funcionario(Usuario):
             print(f"Erro ao editar cliente: {e}")
             conexao.rollback()
         finally:
-            cursor.close()
+                cursor.close()
+                conexao.close()
 
     def listar_clientes():
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
             query = "SELECT u.id, u.usuario, u.cpf, u.primeiroNome, u.sobrenome, u.tipo, c.emprestimos FROM Usuario u JOIN Cliente c ON u.id = c.id"
@@ -292,12 +314,14 @@ class Funcionario(Usuario):
             print(f"Erro ao listar clientes: {e}")
         finally:
             cursor.close()
+            conexao.close()
 
 class Cliente:
     def __init__(self, id_cliente):
         self.id_cliente = id_cliente
 
     def ver_livros():
+        conexao = conectar_banco()
 
         try:
             cursor = conexao.cursor()
@@ -318,9 +342,10 @@ class Cliente:
 
         finally:
             cursor.close()
+            conexao.close
 
     def ver_emprestimos(id_cliente):
-
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -341,8 +366,10 @@ class Cliente:
 
         finally:
             cursor.close()
+            conexao.close()
 
     def ver_multas(id_cliente):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -362,8 +389,10 @@ class Cliente:
 
         finally:
             cursor.close()
+            conexao.close()
     
     def pagar_multa(id_multa):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -387,6 +416,7 @@ class Cliente:
 
         finally:
             cursor.close()
+            conexao.close()
 
 
 class Livro:
@@ -400,6 +430,7 @@ class Livro:
         self.emprestado = emprestado
 
     def adicionar_livro(isbn, nome, autor, edicao, quantidade):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
             query = "INSERT INTO Livro (isbn, nome, autor, edicao, quantidade) VALUES (%s, %s, %s, %s, %s)"
@@ -411,8 +442,10 @@ class Livro:
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
     def excluir_livro(id):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -431,8 +464,10 @@ class Livro:
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.cursor()
 
     def editar_livro(id, isbn=None, nome=None, autor=None, edicao=None, quantidade=None):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -470,6 +505,7 @@ class Livro:
             conexao.rollback()
         finally:
             cursor.close()
+            conexao.close()
 
 class Emprestimo:
     def __init__(self, id_livro, id_cliente, id_funcionario):
@@ -481,6 +517,7 @@ class Emprestimo:
         self.status = True
 
     def verificar_limite(id_cliente):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -509,8 +546,10 @@ class Emprestimo:
             return False
         finally:
             cursor.close()
+            conexao.close()
 
     def calcular_multa(id_cliente):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -555,18 +594,20 @@ class Emprestimo:
 
         finally:
             cursor.close()
+            conexao.close()
 
 
-    def realizar_emprestimo(self):
+    def realizar_emprestimo(id_cliente, id_livro, id_funcionario):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
-            if not Emprestimo.verificar_limite(self.id_cliente):
+            if not Emprestimo.verificar_limite(id_cliente):
                 print("Limite de empréstimos atingido! Não é possível realizar o empréstimo.")
                 return
 
             query_verificar_quantidade = "SELECT quantidade, emprestado FROM livro WHERE id = %s"
-            cursor.execute(query_verificar_quantidade, (self.id_livro,))
+            cursor.execute(query_verificar_quantidade, (id_livro,))
             resultado = cursor.fetchone()
 
             if resultado is None:
@@ -582,7 +623,7 @@ class Emprestimo:
                 return
 
             query_multa = "SELECT id FROM multa WHERE cliente_id = %s AND status = 'pendente'"
-            cursor.execute(query_multa, (self.id_cliente,))
+            cursor.execute(query_multa, (id_cliente,))
             multa_existente = cursor.fetchone()
             if multa_existente:
                 print("Você tem uma multa em aberto e não pode realizar um empréstimo.")
@@ -594,10 +635,10 @@ class Emprestimo:
             query_inserir_emprestimo = (
                 "INSERT INTO emprestimo (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario) VALUES (%s, %s, %s, %s, %s)"
             )
-            cursor.execute(query_inserir_emprestimo, (data_emprestimo, data_devolucao, self.id_livro, self.id_cliente, self.id_funcionario))
+            cursor.execute(query_inserir_emprestimo, (data_emprestimo, data_devolucao, id_livro, id_cliente, id_funcionario))
 
             query_atualizar_quantidade = "UPDATE livro SET emprestado = emprestado + 1 WHERE id = %s"
-            cursor.execute(query_atualizar_quantidade, (self.id_livro,))
+            cursor.execute(query_atualizar_quantidade, (id_livro,))
 
             conexao.commit()
             print("Empréstimo realizado com sucesso!")
@@ -606,8 +647,10 @@ class Emprestimo:
             print(f"Erro ao realizar empréstimo: {erro}")
         finally:
             cursor.close()
+            conexao.close()
 
     def realizar_devolucao(id_emprestimo):
+        conexao = conectar_banco()
         try:
             cursor = conexao.cursor()
 
@@ -652,9 +695,6 @@ class Emprestimo:
 
         except mysql.connector.Error as erro:
             print(f"Erro ao realizar devolução: {erro}")
-
         finally:
             cursor.close()
-
-
-conexao.close()
+            conexao.close()
