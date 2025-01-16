@@ -84,7 +84,7 @@ def menu_funcionario():
         elif escolha_principal == 4:
             menu_emprestimos()
         elif escolha_principal == 5:
-            menu_funcionarios
+            menu_funcionarios()
         else:
             print("Opção inválida. Tente novamente.")
 
@@ -253,7 +253,7 @@ def menu_emprestimos():
                 cpf = input("Digite o cpf do cliente que está devolvendo o livro: ")
                 id_livro = input("Digite o ID do livro que será devolvido: ")
 
-                query_id_cliente = "SELECT id FROM cliente WHERE cpf = %s"
+                query_id_cliente = "SELECT id FROM usuario WHERE cpf = %s"
                 cursor.execute(query_id_cliente, (cpf,))
                 id_cliente = cursor.fetchone()
 
@@ -299,7 +299,7 @@ def menu_funcionarios():
             cursor = conexao.cursor()
             cpf = input("Informe o CPF do funcionário que deseja alterar suas informações: ")
             try:
-                query = "SELECT u.id FROM USUARIO u WHERE cpf = %s AND tipo = 'funcionario'"
+                query = "SELECT id FROM USUARIO WHERE cpf = %s"
                 cursor.execute(query, (cpf,))
                 id_funcionario = cursor.fetchone()
                 
@@ -333,7 +333,7 @@ def menu_funcionarios():
             cursor = conexao.cursor()
             cpf = input("Informe o CPF do funcionário que deseja excluir: ")
             try:
-                query = "SELECT u.id FROM USUARIO u WHERE cpf = %s AND tipo = 'funcionario'"
+                query = "SELECT id FROM USUARIO WHERE cpf = %s"
                 cursor.execute(query, (cpf,))
                 id_funcionario = cursor.fetchone()
 
