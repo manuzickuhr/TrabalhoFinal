@@ -326,6 +326,8 @@ class Cliente:
     def ver_livros():
 
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query = "SELECT id, nome, autor, quantidade, emprestado FROM livro WHERE quantidade > 0"
@@ -348,6 +350,8 @@ class Cliente:
     def ver_emprestimos(id_cliente):
 
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query = "SELECT id, id_livro, data_emprestimo, data_devolucao, status FROM emprestimo WHERE id_cliente = %s"
@@ -370,6 +374,8 @@ class Cliente:
 
     def ver_multas(id_cliente):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query = "SELECT id, dias_atraso, valor FROM multa WHERE cliente_id = %s AND status = 'pendente'"
@@ -391,6 +397,8 @@ class Cliente:
     
     def pagar_multa(id_multa):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query_verificar_multa = "SELECT id, status FROM multa WHERE id = %s AND status = 'pendente'"
