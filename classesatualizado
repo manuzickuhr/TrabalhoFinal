@@ -156,7 +156,7 @@ class Funcionario(Usuario):
             query_funcionario = f"UPDATE Funcionario SET {', '.join(campos_funcionario)} WHERE id = %s"
             dados_funcionario.append(id)
             cursor.execute(query_funcionario, dados_funcionario)
-            conexao.commit()
+            #conexao.commit()
 
             query_usuario = f"UPDATE Usuario SET {', '.join(campos_atualizar)} WHERE id = %s"
             dados.append(id)
@@ -426,6 +426,8 @@ class Livro:
 
     def adicionar_livro(isbn, nome, autor, edicao, quantidade):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
             query = "INSERT INTO Livro (isbn, nome, autor, edicao, quantidade) VALUES (%s, %s, %s, %s, %s)"
             cursor.execute(query, (isbn, nome, autor, edicao, quantidade))
@@ -439,6 +441,8 @@ class Livro:
 
     def excluir_livro(id):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query_verificar = "SELECT id FROM Livro WHERE id = %s"
@@ -459,6 +463,8 @@ class Livro:
 
     def editar_livro(id, isbn=None, nome=None, autor=None, edicao=None, quantidade=None):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             campos_atualizar = []
@@ -507,6 +513,8 @@ class Emprestimo:
 
     def verificar_limite(id_cliente):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query_verificar_cliente = "SELECT id FROM cliente WHERE id = %s"
@@ -537,6 +545,8 @@ class Emprestimo:
 
     def calcular_multa(id_cliente):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query_verificar_emprestimos = "SELECT id, data_devolucao FROM emprestimo WHERE id_cliente = %s AND status = TRUE"
@@ -583,6 +593,8 @@ class Emprestimo:
 
     def realizar_emprestimo(self):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             if not Emprestimo.verificar_limite(self.id_cliente):
@@ -639,6 +651,8 @@ class Emprestimo:
 
     def realizar_devolucao(id_emprestimo):
         try:
+            if not conexao.is_connected():
+                conexao.connect()
             cursor = conexao.cursor()
 
             query_verificar_emprestimo = "SELECT id_cliente, data_devolucao, status FROM emprestimo WHERE id = %s AND status = TRUE"
